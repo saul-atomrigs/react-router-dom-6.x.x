@@ -1,6 +1,11 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom/client';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import {
+  createBrowserRouter,
+  RouterProvider,
+  createRoutesFromElements,
+  Route,
+} from 'react-router-dom';
 
 import './index.css';
 import Root, {
@@ -11,32 +16,34 @@ import ErrorPage from './error-page';
 import Contact, { loader as contactLoader } from './routes/contact';
 import EditContact, { action as editContactAction } from './routes/edit';
 
-const router = createBrowserRouter([
-  {
-    path: '/',
-    element: <Root />,
-    errorElement: <ErrorPage />,
-    loader: rootLoader,
-    action: rootAction,
-    children: [
-      {
-        path: 'contacts/:contactId',
-        element: <Contact />,
-        loader: contactLoader,
-      },
-      {
-        path: 'contacts/:contactId/edit',
-        element: <EditContact />,
-        loader: contactLoader,
-        action: editContactAction,
-      },
-    ],
-  },
-]);
+const router = createBrowserRouter(
+  createRoutesFromElements(
+    <Route
+      path='/'
+      element={<Root />}
+      loader={rootLoader}
+      action={rootAction}
+      errorElement={<ErrorPage />}
+    >
+      <Route errorElement={<ErrorPage />}>
+        <Route
+          path='contacts/:contactId'
+          element={<Contact />}
+          loader={contactLoader}
+        />
+        <Route
+          path='contacts/:contactId/edit'
+          element={<EditContact />}
+          loader={contactLoader}
+          action={editContactAction}
+        />
+      </Route>
+    </Route>
+  )
+);
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  //  strict mode
   <React.StrictMode>
-    <RouterProvider router={router}></RouterProvider>
+    <RouterProvider router={router} />
   </React.StrictMode>
 );
